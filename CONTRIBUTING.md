@@ -6,6 +6,9 @@ Below is a small guide for getting your environment set up and running/testing t
 
 ## Getting started and getting the latest dependencies
 ```bash
+python3 -m venv virtual-env
+source virtual-env/bin/activate
+pip3 install poetry
 poetry install
 ```
 
@@ -27,7 +30,7 @@ poetry run tox
 
 ## Running the tool manually
 ```
-poetry run capgains ...
+poetry run capgains calc test_tx.csv 2017
 ```
 
 ## Creating a release
