@@ -4,13 +4,17 @@ You are free to work on any bug fix or feature from the issues tab. If you inten
 # Developing
 Below is a small guide for getting your environment set up and running/testing the tool. We use [poetry](https://python-poetry.org/docs/) to manage dependencies.
 
-## Getting started and getting the latest dependencies
+
+## Getting started and getting the lates    t dependencies
 ```bash
+python3 -m venv virtual-env 
+source virtual-env/bin/activate
+pip3 install poetry codecov
 poetry install
 ```
 
 ## Running tests manually
-We have a Travis CI setup that will run the test suite, perfrom python linting, and verify the code has full testing coverage for every commit you push. It will perform these checks for every python version that we support, and your code will need to pass all these checks in order to get merged in. You can also running these checks manually before you push your code out as well:
+We have a Travis CI setup that will run the test suite, perform python linting, and verify the code has full testing coverage for every commit you push. It will perform these checks for every python version that we support, and your code will need to pass all these checks in order to get merged in. You can also running these checks manually before you push your code out as well:
 ```bash
 # Run the test suite manually using your system's default python version:
 poetry run pytest --cov-report term --cov=capgains
@@ -28,6 +32,7 @@ poetry run tox
 ## Running the tool manually
 ```
 poetry run capgains ...
+poetry run capgains calc eggs.csv 2021
 ```
 
 ## Creating a release
