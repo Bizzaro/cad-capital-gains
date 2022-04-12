@@ -11,8 +11,8 @@ class Transaction:
         self._ticker = ticker
         self._action = action
         self._qty = Decimal(qty)
-        self._price = Decimal(price)
-        self._commission = Decimal(commission)
+        self._price = round(Decimal(price), 4)
+        self._commission = round(Decimal(commission), 4)
         self._currency = currency
         self._exchange_rate = None
         self._share_balance = Decimal(0.0)
