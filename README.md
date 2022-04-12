@@ -5,6 +5,7 @@ Calculating your capital gains and tracking your adjusted cost base (ACB) manual
 
 ## Features:
 - Works with IBKR `.csv` annual export
+    - See https://github.com/Bizzaro/acb-ibkr for middleware
 - Supports transactions with multiple different stock tickers in the same CSV file, and outputs them in separate tables.
 - Currently supports transactions done in both USD and CAD. For USD transactions, the daily exchange rate will be automatically fetched from the Bank of Canada.
 - Will automatically apply [superficial capital loss](https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/tax-return/completing-a-tax-return/personal-income/line-127-capital-gains/capital-losses-deductions/what-a-superficial-loss.html) rules when calculating your capital gains and ACB. This tool only supports full superficial capital losses, and does not support partial superficial losses. In sales with a superficial capital loss, the capital loss will be carried forward as perscribed by the CRA. A sale with a capital loss will be treated as superficial if it satisifies the following:
