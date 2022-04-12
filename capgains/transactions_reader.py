@@ -54,7 +54,7 @@ class TransactionsReader:
                     qty_idx = cls.columns.index("qty")
                     qty_str = entry[qty_idx]
                     try:
-                        entry[qty_idx] = Decimal(qty_str)
+                        entry[qty_idx] = abs(Decimal(qty_str))
                     except InvalidOperation:
                         raise ClickException(
                             "The quantity entered {} is not a valid number"
@@ -62,7 +62,7 @@ class TransactionsReader:
                     price_idx = cls.columns.index("price")
                     price_str = entry[price_idx]
                     try:
-                        entry[price_idx] = Decimal(price_str)
+                        entry[price_idx] = abs(Decimal(price_str))
                     except InvalidOperation:
                         raise ClickException(
                             "The price entered {} is not a valid number"
@@ -70,7 +70,7 @@ class TransactionsReader:
                     commission_idx = cls.columns.index("commission")
                     commission_str = entry[commission_idx]
                     try:
-                        entry[commission_idx] = Decimal(commission_str)
+                        entry[commission_idx] = abs(Decimal(commission_str))
                     except InvalidOperation:
                         raise ClickException(
                             "The commission entered {} is not a valid number"
