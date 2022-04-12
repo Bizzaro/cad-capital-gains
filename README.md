@@ -1,26 +1,28 @@
-Canadian Capital Gains CLI Tool
+Canadian Capital Gains CLI Tool - FORK
 =
-[![Build Status](https://travis-ci.org/EmilMaric/cad-capital-gains.svg?branch=master)](https://travis-ci.org/EmilMaric/cad-capital-gains)
-[![codecov](https://codecov.io/gh/EmilMaric/cad-capital-gains/branch/master/graph/badge.svg)](https://codecov.io/gh/EmilMaric/cad-capital-gains)
 
 Calculating your capital gains and tracking your adjusted cost base (ACB) manually, or using an Excel document, often proves to be a laborious process. This CLI tool calculates your capital gains and ACB for you, and just requires a CSV file with basic information about your transactions. The idea with this tool is that you are able to more or less cut-and-copy the output that it genarates and copy it into whatever tax filing software you end up using.
 
 ## Features:
+- Works with IBKR `.csv` annual export
 - Supports transactions with multiple different stock tickers in the same CSV file, and outputs them in separate tables.
 - Currently supports transactions done in both USD and CAD. For USD transactions, the daily exchange rate will be automatically fetched from the Bank of Canada.
 - Will automatically apply [superficial capital loss](https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/tax-return/completing-a-tax-return/personal-income/line-127-capital-gains/capital-losses-deductions/what-a-superficial-loss.html) rules when calculating your capital gains and ACB. This tool only supports full superficial capital losses, and does not support partial superficial losses. In sales with a superficial capital loss, the capital loss will be carried forward as perscribed by the CRA. A sale with a capital loss will be treated as superficial if it satisifies the following:
     - Shares with the same ticker were bought in the 61 day window (30 days before or 30 days after the sale)
     - There is a non-zero balance of shares sharing the same ticker at the end of the 61 day window (30 days after the sale)
 - Outputs the running adjusted cost base (ACB) for every transaction with a non-superficial capital gain/loss
-- Supports fractional quantities of shares
+- Supports fractional shares
 
 # Installation
 ```bash
 # To get the latest release
-pip install cad-capgains
+pip install <directory of clone>
 ```
 
 # CSV File Requirements
+**NOTE: This tool only supports calculating ACB and capital gains with transactions
+dating from May 1, 2007 and onwards.**
+
 To start, create a CSV file that will contain all of your transactions. In the CSV file, each line will represent a `BUY` or `SELL` transaction.  Your transactions **must be in order**, with the oldest transactions coming first, followed by newer transactions coming later. The format is as follows:
 ```csv
 <yyyy-mm-dd>,<description>,<stock_ticker>,<action(BUY/SELL)>,<quantity>,<price>,<commission>,<currency>
@@ -31,9 +33,6 @@ Here is a sample CSV file:
 2017-2-15,ESPP PURCHASE,GOOG,BUY,100,50.00,10.00,USD
 2017-5-20,RSU VEST,GOOG,SELL,50,45.00,0.00,CAD
 ```
-
-**NOTE: This tool only supports calculating ACB and capital gains with transactions
-dating from May 1, 2007 and onwards.**
 
 # Usage
 To show the CSV file in a nice tabular format you can run:
@@ -60,21 +59,14 @@ GOOG-2017
 Your CSV file can contain transactions spanning across multiple different tickers. You can filter the above commands by running the following:
 ```bash
 $ capgains calc sample.csv 2017 -t GOOG
-...
-
 $ capgains show sample.csv -t GOOG
-...
 ```
 For additional commands and options, run one of the following:
 ```bash
 $ capgains --help
-
 $ capgains <command> --help
 ```
 You can take this output and plug it into your favourite tax software (Simpletax, StudioTax, etc) and verify that the capital gains/losses that the tax software reports lines up with what the output of this command says.
 
-# Finding issues
-If you find issues using this tool, please create an Issue using the [Github issue tracker](https://github.com/EmilMaric/cad-capital-gains/issues) and one of us will try to fix it.
-
 # Contributing
-If you would like to contribute, please read the [CONTRIBUTING.md](https://github.com/EmilMaric/cad-capital-gains/blob/master/CONTRIBUTING.md) page
+If you would like to contribute, please read the [CONTRIBUTING.md](./CONTRIBUTING.md) page
