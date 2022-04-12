@@ -28,6 +28,36 @@ def test_transactions_reader_default(testfiles_dir, transactions):
     actual_transaction = actual_transactions[0]
     assert actual_transaction.__dict__ == exp_transaction.__dict__
 
+def test_transactions_reader_negative_inputs(testfiles_dir, transactions):
+    """Testing TransactionsReader for a csv file with negative numbers"""
+    input_transaction = Transaction(date(2018, 2, 15),
+                                'ESPP PURCHASE',
+                                'ANET',
+                                'BUY',
+                                -21,
+                                -307.96,
+                                -20.99,
+                                'USD')
+
+    exp_transaction = Transaction(date(2018, 2, 15),
+                                  'ESPP PURCHASE',
+                                  'ANET',
+                                  'BUY',
+                                  21,
+                                  307.96,
+                                  20.99,
+                                  'USD')
+
+    input_transactions = transactions_to_list([input_transaction])
+    filepath = create_csv_file(testfiles_dir,
+                               "good.csv",
+                               input_transactions,
+                               True)
+
+    actual_transactions = TransactionsReader.get_transactions(filepath)
+    assert len(actual_transactions) == 1
+    actual_transaction = actual_transactions[0]
+    assert actual_transaction.__dict__ == exp_transaction.__dict__
 
 def test_transactions_reader_columns_error(testfiles_dir):
     """Testing TransactionsReader for a csv file with too many columns"""
