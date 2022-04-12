@@ -13,18 +13,19 @@ poetry install
 ```
 poetry run pytest --cov-report term --cov=capgains
 ```
+```
+Run the test suite against all the supported python versions and the linter in an isolated environment. You will need to have the supported python versions installed otherwise you will get a `InterpreterNotFoundError`
 
-# Autoformatter
-```
-poetry run autopep8 **/*.py --in-place
-```
-
-# Run the test suite against all the supported python versions
-# and the linter in an isolated environment. You will need to
-# have the supported python versions installed otherwise you
-# will get a `InterpreterNotFoundError`
-```
 poetry run tox
+```
+
+## Autoformatter
+```
+# modifies files in place
+poetry run autopep8 -i **/*.py 
+
+# verbose, hints
+poetry run flake8 
 ```
 
 ## Running the tool manually
