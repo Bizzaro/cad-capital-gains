@@ -17,7 +17,6 @@ def test_transactions_reader_default(testfiles_dir, transactions):
                                   307.96,
                                   20.99,
                                   'USD')
-    print(exp_transaction)
     exp_transactions = transactions_to_list([exp_transaction])
     filepath = create_csv_file(testfiles_dir,
                                "good.csv",
