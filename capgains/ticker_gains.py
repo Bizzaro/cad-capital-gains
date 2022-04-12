@@ -60,7 +60,7 @@ class TickerGains:
             acb = old_acb_per_share * transaction.qty
             capital_gain = proceeds - transaction.expenses - acb
             self._total_acb -= acb
-        else: # BUY
+        else:  # BUY
             self._share_balance += transaction.qty
             acb = proceeds + transaction.expenses
             capital_gain = Decimal(0.0)

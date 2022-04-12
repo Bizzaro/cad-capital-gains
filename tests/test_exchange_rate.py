@@ -36,26 +36,26 @@ def USD_exchange_rates_mock(requests_mock):
                       })
     requests_mock.get(indicative_rate_matcher,
                       json={
-                        "observations": [
-                            {
-                                "d": "2020-05-21",
-                                "FXUSDCAD": {
-                                    "v": "1.2"
-                                }
-                            },
-                            {
-                                "d": "2020-05-22",
-                                "FXUSDCAD": {
-                                    "v": "1.3"
-                                }
-                            },
-                            {
-                                "d": "2020-05-25",
-                                "FXUSDCAD": {
-                                    "v": "1.4"
-                                }
-                            },
-                        ]
+                          "observations": [
+                              {
+                                  "d": "2020-05-21",
+                                  "FXUSDCAD": {
+                                      "v": "1.2"
+                                  }
+                              },
+                              {
+                                  "d": "2020-05-22",
+                                  "FXUSDCAD": {
+                                      "v": "1.3"
+                                  }
+                              },
+                              {
+                                  "d": "2020-05-25",
+                                  "FXUSDCAD": {
+                                      "v": "1.4"
+                                  }
+                              },
+                          ]
                       })
 
 

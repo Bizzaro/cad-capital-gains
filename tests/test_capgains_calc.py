@@ -116,23 +116,23 @@ ANET-2018
 def test_calc_mixed_currencies(capfd, requests_mock):
     """Testing capgains_calc with mixed currencies"""
     usd_transaction = Transaction(
-            date(2017, 2, 15),
-            'ESPP PURCHASE',
-            'ANET',
-            'BUY',
-            100,
-            50.00,
-            0.00,
-            'USD')
+        date(2017, 2, 15),
+        'ESPP PURCHASE',
+        'ANET',
+        'BUY',
+        100,
+        50.00,
+        0.00,
+        'USD')
     cad_transaction = Transaction(
-            date(2018, 2, 20),
-            'RSU VEST',
-            'ANET',
-            'SELL',
-            100,
-            50.00,
-            0.00,
-            'CAD')
+        date(2018, 2, 20),
+        'RSU VEST',
+        'ANET',
+        'SELL',
+        100,
+        50.00,
+        0.00,
+        'CAD')
     transactions = Transactions([
         usd_transaction,
         cad_transaction
