@@ -51,9 +51,7 @@ def calculate_gains(transactions, year, ticker):
     tg = TickerGains(ticker)
     tg.add_transactions(ticker_transactions, er_map)
     # for every transactions class, there is a transaction class
-    return ticker_transactions.filter_by(year=year, action='SELL',
-                                         superficial_loss=False)
-
+    return ticker_transactions.filter_by(year=year, action='SELL', description="Stocks", superficial_loss=False)
 
 def capgains_calc(transactions, year, tickers=None):
     """Take a list of transactions and print the calculated capital

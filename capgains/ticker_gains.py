@@ -1,6 +1,7 @@
-from click import ClickException
 from datetime import timedelta
 from decimal import Decimal
+import click
+import tabulate
 
 
 class TickerGains:
@@ -14,10 +15,10 @@ class TickerGains:
         for t in transactions:
             rate = exchange_rates[t.currency].get_rate(t.date)
             t.exchange_rate = rate
-            self._add_transaction(t)
-            if self._is_superficial_loss(t, transactions):
-                self._total_acb -= t.capital_gain
-                t.set_superficial_loss()
+            if (self._add_transaction(t)):
+                if self._is_superficial_loss(t, transactions):
+                    self._total_acb -= t.capital_gain
+                    t.set_superficial_loss()
 
     def _superficial_window_filter(self, transaction, min_date, max_date):
         """Filter out BUY transactions that fall within
@@ -57,42 +58,69 @@ class TickerGains:
 
         proceeds = (transaction.qty * transaction.price) * transaction.exchange_rate  # noqa: E501
 
-        capital_gain = Decimal(0.0)
-        acb = Decimal(0.0)
-
-        if (transaction.action == 'SELL' and transaction._description == "Equity and Index Options" and (self._share_balance - transaction.qty) < 0):
-            # this is a sell to open options trade
-            print('this is a sell to open options trade')
-            self._share_balance += transaction.qty
-            acb = proceeds + transaction.expenses
-            print(acb)
-            self._total_acb += acb
-        elif (transaction.action == 'BUY' and transaction._description == "Equity and Index Options" and (self._share_balance + transaction.qty) == 0):
-            # this is a buy to close options trade
-            print('this is a buy to close options trade')
-            self._share_balance += transaction.qty
-            acb = old_acb_per_share * transaction.qty
-            print(acb)
-            capital_gain = proceeds - transaction.expenses - acb
-            self._total_acb -= acb
-        elif (transaction._description == "Stocks"):
-            if transaction.action == 'SELL':
-                print('stock sell')
+        if (transaction._description == "Stocks"):
+            if transaction.action == "SELL":
                 self._share_balance -= transaction.qty
                 acb = old_acb_per_share * transaction.qty
                 capital_gain = proceeds - transaction.expenses - acb
                 self._total_acb -= acb
-            else:  # BUY
-                print('stock buy')
+            elif transaction.action == "BUY":
                 self._share_balance += transaction.qty
                 acb = proceeds + transaction.expenses
                 capital_gain = Decimal(0.0)
                 self._total_acb += acb
+        elif (transaction._description == "Equity and Index Options"):
+            # describes how to align the individual table columns
+            colalign = (
+                "left",   # Date
+                "left",   # Option name
+                "left",   # Operation
+                "right",  # Quantity
+                "right",  # Price (CAD)
+                "right",  # Fee
+                "right",  # Number
+            )
+
+            # example 2:
+            # buy to open - plus fees
+            # sell to close - minus fees
+
+            # example 6:
+            # sell to open - minus fees
+            # buy to close - plus fees
+            option_name = transaction.ticker[-1]
+
+            if (option_name == "P"):
+                option_name = "PUT"
+            elif (option_name == "C"):
+                option_name = "CALL"
+
+            if (transaction.action == "BUY"):
+                proceeds_or_acb = proceeds + transaction.expenses
+            elif (transaction.action == "SELL"):
+                proceeds_or_acb = proceeds - transaction.expenses
+                
+            headers = ["date", "option name", "operation", "qty", "price (CAD)", "fee", "acb/proceeds"]
+
+            rows = [[
+                transaction.date,
+                transaction.ticker,
+                f"{transaction.action} {option_name}",
+                "{0:f}".format(transaction.qty.normalize()),
+                "{:,.2f}".format(proceeds),
+                "{:,.2f}".format(transaction.expenses),
+                "{:,.2f}".format(proceeds_or_acb),
+            ]]
+            output = tabulate.tabulate(rows, headers=headers, tablefmt="psql",
+                                   colalign=colalign, disable_numparse=True)
+            click.echo("{}\n".format(output))
+            return False
 
         if self._share_balance < 0:
-            raise ClickException("Transaction caused negative share balance. Please make sure you own this security! Make sure you add all transactions from all years into the .csv.")
+            print("Transaction caused negative share balance. Please make sure you own this security! Make sure you add all transactions from all years into the .csv.")
 
         transaction.share_balance = self._share_balance
         transaction.proceeds = proceeds
         transaction.capital_gain = capital_gain
         transaction.acb = acb
+        return True

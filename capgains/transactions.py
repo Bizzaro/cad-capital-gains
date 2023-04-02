@@ -34,7 +34,7 @@ class Transactions:
         ticker_refcount += 1
         self._tickers[transaction.ticker] = ticker_refcount
 
-    def filter_by(self, tickers=None, year=None, max_year=None, action=None,
+    def filter_by(self, tickers=None, year=None, max_year=None, action=None, description=None,
                   superficial_loss=None):
         """Filter the list of stored transactions on certain parameters (such
         as ticker, year, etc) and return only the transactions that match the
@@ -44,6 +44,8 @@ class Transactions:
             keep = True
             if tickers:
                 keep &= (t.ticker in tickers)
+            if description:
+                keep &= (t.description in description)
             if year:
                 keep &= (t.date.year == year)
             if max_year:
