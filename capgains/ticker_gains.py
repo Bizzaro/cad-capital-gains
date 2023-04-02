@@ -54,19 +54,44 @@ class TickerGains:
             old_acb_per_share = 0
         else:
             old_acb_per_share = self._total_acb / self._share_balance
+
         proceeds = (transaction.qty * transaction.price) * transaction.exchange_rate  # noqa: E501
-        if transaction.action == 'SELL':
-            self._share_balance -= transaction.qty
-            acb = old_acb_per_share * transaction.qty
-            capital_gain = proceeds - transaction.expenses - acb
-            self._total_acb -= acb
-        else:  # BUY
+
+        capital_gain = Decimal(0.0)
+        acb = Decimal(0.0)
+
+        if (transaction.action == 'SELL' and transaction._description == "Equity and Index Options" and (self._share_balance - transaction.qty) < 0):
+            # this is a sell to open options trade
+            print('this is a sell to open options trade')
             self._share_balance += transaction.qty
             acb = proceeds + transaction.expenses
-            capital_gain = Decimal(0.0)
+            print(acb)
             self._total_acb += acb
+        elif (transaction.action == 'BUY' and transaction._description == "Equity and Index Options" and (self._share_balance + transaction.qty) == 0):
+            # this is a buy to close options trade
+            print('this is a buy to close options trade')
+            self._share_balance += transaction.qty
+            acb = old_acb_per_share * transaction.qty
+            print(acb)
+            capital_gain = proceeds - transaction.expenses - acb
+            self._total_acb -= acb
+        elif (transaction._description == "Stocks"):
+            if transaction.action == 'SELL':
+                print('stock sell')
+                self._share_balance -= transaction.qty
+                acb = old_acb_per_share * transaction.qty
+                capital_gain = proceeds - transaction.expenses - acb
+                self._total_acb -= acb
+            else:  # BUY
+                print('stock buy')
+                self._share_balance += transaction.qty
+                acb = proceeds + transaction.expenses
+                capital_gain = Decimal(0.0)
+                self._total_acb += acb
+
         if self._share_balance < 0:
-            raise ClickException("Transaction caused negative share balance")
+            raise ClickException("Transaction caused negative share balance. Please make sure you own this security! Make sure you add all transactions from all years into the .csv.")
+
         transaction.share_balance = self._share_balance
         transaction.proceeds = proceeds
         transaction.capital_gain = capital_gain

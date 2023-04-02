@@ -36,3 +36,7 @@ poetry run capgains calc eggs.csv 2021
 
 ## Creating a release
 TBD
+```
+pip install `foldername`
+capgains calc ...
+```
