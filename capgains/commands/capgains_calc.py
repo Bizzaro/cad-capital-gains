@@ -1,6 +1,7 @@
 import click
 import tabulate
 from itertools import groupby
+import csv
 
 from capgains.exchange_rate import ExchangeRate
 from capgains.ticker_gains import TickerGains
@@ -84,3 +85,10 @@ def capgains_calc(transactions, year, tickers=None):
         output = tabulate.tabulate(rows, headers=headers, tablefmt="psql",
                                    colalign=colalign, disable_numparse=True)
         click.echo("{}\n".format(output))
+
+        with open('schedule3-2022.csv', 'a', encoding='UTF8', newline='') as f:
+            writer = csv.writer(f)
+            # myTaxExpress format: qty, stock name, sell price, buy price/acb, expense
+            # https://faq.mytaxexpress.com/index.php?action=faq&cat=8&id=137&artlang=en
+            for r in rows:
+                writer.writerow([r[3], r[2], r[4], r[5], r[6]])
