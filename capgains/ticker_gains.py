@@ -1,4 +1,5 @@
 from datetime import timedelta
+from datetime import datetime
 from decimal import Decimal
 import click
 import tabulate
@@ -57,7 +58,7 @@ class TickerGains:
             old_acb_per_share = self._total_acb / self._share_balance
 
         proceeds = (transaction.qty * transaction.price) * transaction.exchange_rate  # noqa: E501
-
+        
         if (transaction._description == "Stocks"):
             if transaction.action == "SELL":
                 self._share_balance -= transaction.qty
@@ -70,6 +71,10 @@ class TickerGains:
                 capital_gain = Decimal(0.0)
                 self._total_acb += acb
         elif (transaction._description == "Equity and Index Options"):
+            # only output option trades relevant to the current tax year
+            if (transaction.date.year != datetime.now().year - 1):
+                return False
+
             # describes how to align the individual table columns
             colalign = (
                 "left",   # Date
@@ -96,11 +101,11 @@ class TickerGains:
                 option_name = "CALL"
 
             if (transaction.action == "BUY"):
-                proceeds_or_acb = proceeds + transaction.expenses
+                proceeds_or_acb =  "{:,.2f}".format(proceeds + transaction.expenses)
             elif (transaction.action == "SELL"):
-                proceeds_or_acb = proceeds - transaction.expenses
+                proceeds_or_acb = "N/A"
                 
-            headers = ["date", "option name", "operation", "qty", "price (CAD)", "fee", "acb/proceeds"]
+            headers = ["date", "option name", "operation", "qty", "price (CAD)", "fee", "acb"]
 
             rows = [[
                 transaction.date,
@@ -109,7 +114,7 @@ class TickerGains:
                 "{0:f}".format(transaction.qty.normalize()),
                 "{:,.2f}".format(proceeds),
                 "{:,.2f}".format(transaction.expenses),
-                "{:,.2f}".format(proceeds_or_acb),
+                proceeds_or_acb,
             ]]
             output = tabulate.tabulate(rows, headers=headers, tablefmt="psql",
                                    colalign=colalign, disable_numparse=True)
@@ -117,7 +122,8 @@ class TickerGains:
             return False
 
         if self._share_balance < 0:
-            print("Transaction caused negative share balance. Please make sure you own this security! Make sure you add all transactions from all years into the .csv.")
+            click.echo(f"Transaction caused negative share balance. Please make sure you own \"{transaction.ticker}\"! Add all transactions from all years into the .csv.")
+            return False
 
         transaction.share_balance = self._share_balance
         transaction.proceeds = proceeds

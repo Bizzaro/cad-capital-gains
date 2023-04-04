@@ -61,34 +61,38 @@ def capgains_calc(transactions, year, tickers=None):
     if not filtered_transactions:
         click.echo("No transactions available")
         return
+
+    output_queue = []
+
     for ticker in filtered_transactions.tickers:
-        click.echo("{}-{}".format(ticker, year))
         transactions_to_report = calculate_gains(filtered_transactions, year,
                                                  ticker)
-        if not transactions_to_report:
-            click.echo("No capital gains\n")
-            continue
-        total_gains = _get_total_gains(transactions_to_report)
-        click.echo("[Total Gains = {0:,.2f}]".format(total_gains))
-        headers = ["date", "description", "ticker", "qty", "proceeds", "ACB",
-                   "outlays", "capital gain/loss"]
-        rows = [[
-            t.date,
-            t.description,
-            t.ticker,
-            "{0:f}".format(t.qty.normalize()),
-            "{:,.2f}".format(t.proceeds),
-            "{:,.2f}".format(t.acb),
-            "{:,.2f}".format(t.expenses),
-            "{:,.2f}".format(t.capital_gain)
-        ] for t in transactions_to_report]
-        output = tabulate.tabulate(rows, headers=headers, tablefmt="psql",
-                                   colalign=colalign, disable_numparse=True)
-        click.echo("{}\n".format(output))
+        if transactions_to_report:
+            click.echo("{}-{}".format(ticker, year))
 
-        with open('schedule3-2022.csv', 'a', encoding='UTF8', newline='') as f:
-            writer = csv.writer(f)
-            # myTaxExpress format: qty, stock name, sell price, buy price/acb, expense
-            # https://faq.mytaxexpress.com/index.php?action=faq&cat=8&id=137&artlang=en
+            total_gains = _get_total_gains(transactions_to_report)
+            click.echo("[Total Gains = {0:,.2f}]".format(total_gains))
+            headers = ["date", "description", "ticker", "qty", "proceeds", "ACB",
+                    "outlays", "capital gain/loss"]
+            rows = [[
+                t.date,
+                t.description,
+                t.ticker,
+                "{0:f}".format(t.qty.normalize()),
+                "{:,.2f}".format(t.proceeds),
+                "{:,.2f}".format(t.acb),
+                "{:,.2f}".format(t.expenses),
+                "{:,.2f}".format(t.capital_gain)
+            ] for t in transactions_to_report]
+            output = tabulate.tabulate(rows, headers=headers, tablefmt="psql",
+                                    colalign=colalign, disable_numparse=True)
+            click.echo("{}\n".format(output))
+
             for r in rows:
-                writer.writerow([r[3], r[2], r[4], r[5], r[6]])
+                # https://faq.mytaxexpress.com/index.php?action=faq&cat=8&id=137&artlang=en
+                # myTaxExpress format: qty, stock name, sell price, buy price/acb, expense
+                output_queue.append([r[3], r[2], r[4], r[5], r[6]])
+                
+    with open('schedule3-2022.csv', 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(output_queue)
