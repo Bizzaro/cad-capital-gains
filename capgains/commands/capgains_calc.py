@@ -54,6 +54,7 @@ def calculate_gains(transactions, year, ticker):
     # for every transactions class, there is a transaction class
     return ticker_transactions.filter_by(year=year, action='SELL', description="Stocks", superficial_loss=False)
 
+
 def capgains_calc(transactions, year, tickers=None):
     """Take a list of transactions and print the calculated capital
     gains in a separate tabular format for each specified ticker."""
@@ -73,7 +74,7 @@ def capgains_calc(transactions, year, tickers=None):
             total_gains = _get_total_gains(transactions_to_report)
             click.echo("[Total Gains = {0:,.2f}]".format(total_gains))
             headers = ["date", "description", "ticker", "qty", "proceeds", "ACB",
-                    "outlays", "capital gain/loss"]
+                       "outlays", "capital gain/loss"]
             rows = [[
                 t.date,
                 t.description,
@@ -85,14 +86,14 @@ def capgains_calc(transactions, year, tickers=None):
                 "{:,.2f}".format(t.capital_gain)
             ] for t in transactions_to_report]
             output = tabulate.tabulate(rows, headers=headers, tablefmt="psql",
-                                    colalign=colalign, disable_numparse=True)
+                                       colalign=colalign, disable_numparse=True)
             click.echo("{}\n".format(output))
 
             for r in rows:
                 # https://faq.mytaxexpress.com/index.php?action=faq&cat=8&id=137&artlang=en
                 # myTaxExpress format: qty, stock name, sell price, buy price/acb, expense
                 output_queue.append([r[3], r[2], r[4], r[5], r[6]])
-                
+
     with open('schedule3-2022.csv', 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(output_queue)

@@ -70,7 +70,8 @@ class TransactionsReader:
                     commission_idx = cls.columns.index("commission")
                     commission_str = entry[commission_idx]
                     try:
-                        entry[commission_idx] = abs(round(Decimal(commission_str), 4))
+                        entry[commission_idx] = abs(
+                            round(Decimal(commission_str), 4))
                     except InvalidOperation:
                         raise ClickException(
                             "The commission entered {} is not a valid number"

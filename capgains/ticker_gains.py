@@ -58,7 +58,7 @@ class TickerGains:
             old_acb_per_share = self._total_acb / self._share_balance
 
         proceeds = (transaction.qty * transaction.price) * transaction.exchange_rate  # noqa: E501
-        
+
         if (transaction._description == "Stocks"):
             if transaction.action == "SELL":
                 self._share_balance -= transaction.qty
@@ -101,11 +101,13 @@ class TickerGains:
                 option_name = "CALL"
 
             if (transaction.action == "BUY"):
-                proceeds_or_acb =  "{:,.2f}".format(proceeds + transaction.expenses)
+                proceeds_or_acb = "{:,.2f}".format(
+                    proceeds + transaction.expenses)
             elif (transaction.action == "SELL"):
                 proceeds_or_acb = "N/A"
-                
-            headers = ["date", "option name", "operation", "qty", "price (CAD)", "fee", "acb"]
+
+            headers = ["date", "option name", "operation",
+                       "qty", "price (CAD)", "fee", "acb"]
 
             rows = [[
                 transaction.date,
@@ -117,12 +119,13 @@ class TickerGains:
                 proceeds_or_acb,
             ]]
             output = tabulate.tabulate(rows, headers=headers, tablefmt="psql",
-                                   colalign=colalign, disable_numparse=True)
+                                       colalign=colalign, disable_numparse=True)
             click.echo("{}\n".format(output))
             return False
 
         if self._share_balance < 0:
-            click.echo(f"Transaction caused negative share balance. Please make sure you own \"{transaction.ticker}\"! Add all transactions from all years into the .csv.")
+            click.echo(
+                f"Transaction caused negative share balance. Please make sure you own \"{transaction.ticker}\"! Add all transactions from all years into the .csv.")
             return False
 
         transaction.share_balance = self._share_balance
