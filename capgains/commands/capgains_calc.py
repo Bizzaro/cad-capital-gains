@@ -94,6 +94,6 @@ def capgains_calc(transactions, year, tickers=None):
                 # myTaxExpress format: qty, stock name, sell price, buy price/acb, expense
                 output_queue.append([r[3], r[2], r[4], r[5], r[6]])
 
-    with open('schedule3-2022.csv', 'w', encoding='UTF8', newline='') as f:
+    with open(f'schedule3-{year}.csv', 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(output_queue)
