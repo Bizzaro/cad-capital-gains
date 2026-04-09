@@ -129,7 +129,10 @@ def test_unsupported_currency_returns_error():
     day = date(2020, 5, 22)
     with pytest.raises(ClickException) as excinfo:
         ExchangeRate("BLAHBLAH", day, day)
-    assert excinfo.value.message == "Currency (BLAHBLAH) is not currently supported. The supported currencies are ['CAD', 'USD']"  # noqa: E501
+    assert excinfo.value.message == (
+        "Currency (BLAHBLAH) is not currently supported. The supported "
+        "currencies are ['CAD', 'USD', 'EUR', 'GBP']"
+    )
 
 
 def test_no_observations_found_exception(requests_mock):

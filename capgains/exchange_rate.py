@@ -12,8 +12,12 @@ class ExchangeRate:
     currency_to = 'CAD'
     date = 'd'
     value = 'v'
-    supported_currencies = ['CAD', 'USD']
-    noon_rate_forex_str = {'USD': 'IEXE0101'}
+    supported_currencies = ['CAD', 'USD', 'EUR', 'GBP']
+    noon_rate_forex_str = {
+        'USD': 'IEXE0101',
+        'EUR': 'FXEURCAD',
+        'GBP': 'FXGBPCAD',
+    }
 
     def __init__(self, currency_from, start_date, end_date):
         self._currency_from = currency_from
